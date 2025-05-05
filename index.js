@@ -1,15 +1,16 @@
 import express from "express";
 import dotenv from "dotenv";
 import axios from "axios";
-
 import cors from "cors";
 
-app.use(cors()); // Add this line
-app.use(express.json());
-
-
+// Load env variables
 dotenv.config();
+
+// Initialize the app first
 const app = express();
+
+// Apply middleware after app is initialized
+app.use(cors());
 app.use(express.json());
 
 app.post("/webhook", async (req, res) => {
@@ -45,9 +46,14 @@ app.post("/webhook", async (req, res) => {
   }
 });
 
+app.get("/", (req, res) => {
+  res.send("ZeptoMail webhook server is running!");
+});
+
 app.listen(3000, () => console.log("Server started on port 3000"));
 
-app.get("/", (req, res) => {
-    res.send("ZeptoMail webhook server is running!");
-  });
+
+
+
+//Backend works
   
