@@ -41,9 +41,16 @@ app.post("/webhook", async (req, res) => {
 
     res.send("Email sent successfully!");
   } catch (err) {
-    console.error(err.response?.data || err.message);
-    res.status(500).send("Error sending email.");
+  console.error("ZeptoMail Error:");
+  if (err.response) {
+    console.error("Status:", err.response.status);
+    console.error("Headers:", err.response.headers);
+    console.error("Data:", err.response.data);
+  } else {
+    console.error("Error Message:", err.message);
   }
+  res.status(500).send("Error sending email.");
+}
 });
 
 app.get("/", (req, res) => {
