@@ -6,23 +6,39 @@ import cors from "cors";
 // Load env variables
 dotenv.config();
 
-// Initialize the app first
+// Initialize Express app
 const app = express();
 
-// Apply middleware after app is initialized
+// CORS setup for your Zoho Sites domain
 app.use(cors({
   origin: "https://www.genztechguru.co.in",
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
 }));
+
+// Handle preflight OPTIONS request
+app.options("*", cors());
+
+// Parse JSON bodies
 app.use(express.json());
 
+// Health check route
+app.get("/", (req, res) => {
+  res.send("ZeptoMail webhook server is running!");
+});
+
+// Webhook endpoint
 app.post("/webhook", async (req, res) => {
   const { email, name } = req.body;
 
+  // Debug logging
+  console.log("📩 Incoming request:", req.body);
+
   try {
-    await axios.post("https://api.zeptomail.in/v1.1/email", {
-      mailagent_id: process.env.ZEPTO_MAILAGENT_ID,
+    const response = await axios.post("https://api.zeptomail.in/v1.1/email", {
+      mailagent_id: process.env.ZEPTO_MAILAGENT_ID, // Make sure this is set in Render
       from: {
-        address: process.env.ZEPTO_FROM_EMAIL,
+        address: process.env.ZEPTO_FROM_EMAIL,       // Also set in .env
         name: "Tribal trials",
       },
       to: [
@@ -42,28 +58,21 @@ app.post("/webhook", async (req, res) => {
       },
     });
 
-    res.send("Email sent successfully!");
+    console.log("✅ Email sent via ZeptoMail:", response.data);
+    res.status(200).send("Email sent successfully!");
   } catch (err) {
-  console.error("ZeptoMail Error:");
-  if (err.response) {
-    console.error("Status:", err.response.status);
-    console.error("Headers:", err.response.headers);
-    console.error("Data:", err.response.data);
-  } else {
-    console.error("Error Message:", err.message);
+    console.error("❌ ZeptoMail Error:");
+    if (err.response) {
+      console.error("Status:", err.response.status);
+      console.error("Data:", err.response.data);
+    } else {
+      console.error("Error Message:", err.message);
+    }
+    res.status(500).send("Error sending email.");
   }
-  res.status(500).send("Error sending email.");
-}
 });
 
-app.get("/", (req, res) => {
-  res.send("ZeptoMail webhook server is running!");
-});
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Server started on port ${PORT}`));
 
-app.listen(3000, () => console.log("Server started on port 3000"));
-
-
-
-
-//Backend works
-  
