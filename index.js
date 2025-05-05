@@ -10,7 +10,9 @@ dotenv.config();
 const app = express();
 
 // Apply middleware after app is initialized
-app.use(cors());
+app.use(cors({
+  origin: "https://www.genztechguru.co.in",
+}));
 app.use(express.json());
 
 app.post("/webhook", async (req, res) => {
