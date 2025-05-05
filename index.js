@@ -25,7 +25,7 @@ app.post("/webhook", async (req, res) => {
 
   try {
     const response = await axios.post("https://api.zeptomail.in/v1.1/email", {
-      mailagent_id: process.env.ZEPTO_MAILAGENT_ID,
+#      mailagent_id: process.env.ZEPTO_MAILAGENT_ID,
       from: {
         address: process.env.ZEPTO_FROM_EMAIL,
         name: "Tribal trials",
